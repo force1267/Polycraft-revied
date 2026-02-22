@@ -64,7 +64,7 @@
             };
 
             var methods = ['get', 'head', 'post', 'put', 'delete', 'jsonp'];
-            _.forEach(methods, function (methodName)
+            methods.forEach(function (methodName)
             {
                 wrappedHttp[methodName] = wrapCall(methodName);
             });
@@ -88,7 +88,7 @@
                 function (errResponse)
                 {
                     var retry_codes = [0, 408, 429, 480];
-                    if (numTries > 0 && _.contains(retry_codes, errResponse.status) && online.test())
+                    if (numTries > 0 && retry_codes.indexOf(errResponse.status) !== -1 && online.test())
                     {
                         var timeout = Math.min(baseRetryTime * Math.pow(2, (maxTries - numTries)), maxRetryTime);
                         $timeout(function ()
@@ -128,7 +128,7 @@
             };
 
             var methods = ['get', 'head', 'post', 'put', 'delete', 'jsonp'];
-            _.forEach(methods, function (methodName)
+            methods.forEach(function (methodName)
             {
                 wrappedHttp[methodName] = wrapCall(methodName);
             });
@@ -234,7 +234,7 @@
             };
 
             var methods = ['get', 'head', 'post', 'put', 'delete', 'jsonp'];
-            _.forEach(methods, function (methodName)
+            methods.forEach(function (methodName)
             {
                 wrappedHttp[methodName] = wrapCall(methodName);
             });
@@ -493,32 +493,40 @@
 
                 if (online.test())
                 {
-                    // try and log in to google play
-                    oauth.signIn().then(function (oAuthToken)
+                    // Check if ga.me backend is reachable before attempting login
+                    $http.get('/dynamic/config', { timeout: 5000 }).then(function ()
                     {
-                        document.getElementById('login-webview').src = baseUrl + '/acergames/#' + oAuthToken;
+                        // Backend reachable - try and log in to google play
+                        oauth.signIn().then(function (oAuthToken)
+                        {
+                            document.getElementById('login-webview').src = baseUrl + '/acergames/#' + oAuthToken;
 
-                        showConnecting();
-                        if (localStorage.playedBefore)
-                        {
-                            $http.get('/dynamic/login-status').then(function (response)
+                            showConnecting();
+                            if (localStorage.playedBefore)
                             {
-                                if (response.data.value)
+                                $http.get('/dynamic/login-status').then(function (response)
                                 {
-                                    playGame();
-                                }
-                                else
-                                {
-                                    login(oAuthToken).then(playGame);
-                                }
-                            }, $scope.play);
-                        }
-                        else
-                        {
-                            localStorage.playedBefore = true;
-                            login(oAuthToken).then(playGame);
-                        }
-                    }, $scope.play);
+                                    if (response.data.value)
+                                    {
+                                        playGame();
+                                    }
+                                    else
+                                    {
+                                        login(oAuthToken).then(playGame);
+                                    }
+                                }, $scope.play);
+                            }
+                            else
+                            {
+                                localStorage.playedBefore = true;
+                                login(oAuthToken).then(playGame);
+                            }
+                        }, $scope.play);
+                    }, function ()
+                    {
+                        // Backend unreachable (ga.me shutdown) - go straight to offline play
+                        $scope.play();
+                    });
                 }
                 else
                 {

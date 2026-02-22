@@ -1,0 +1,15 @@
+{
+  "name": "polycraft",
+  "description": "You've been stranded on a mysterious island — what bad luck! Build a base and survive the island. Take the stand, hero!",
+  "version": "1.0.0.25",
+  "main": "index.html",
+  "window": {
+    "min_width": 790,
+    "min_height": 444,
+    "width": 1280,
+    "height": 720,
+    "title": "Polycraft",
+    "icon": "128.png",
+    "toolbar": true
+  }
+}

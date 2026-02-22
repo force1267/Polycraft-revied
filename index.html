@@ -1,6 +1,16 @@
 <!DOCTYPE html>
 <html lang="en" id="ng-app" ng-csp="" ng-app="game.host">
 <head>
+    <script>
+        // Open DevTools on load when running in NW.js (for debugging freezes)
+        (function() {
+            try {
+                if (typeof nw !== 'undefined' && nw.Window && nw.Window.get) {
+                    nw.Window.get().showDevTools();
+                }
+            } catch (e) {}
+        })();
+    </script>
     <script src="js/lib/jquery-1.10.2.js"></script>
     <script src="js/lib/angular.js"></script>
     <script src="js/lib/angular-route.js"></script>

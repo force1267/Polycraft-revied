@@ -6782,4 +6782,8 @@
     // in a browser or Rhino
     root._ = _;
   }
+  // NW.js: ensure window._ is set when Node path is taken (freeExports && freeModule)
+  if (typeof window !== 'undefined' && !window._ && typeof _ !== 'undefined') {
+    window._ = _;
+  }
 }.call(this));
